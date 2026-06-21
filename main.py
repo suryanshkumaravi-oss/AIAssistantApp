@@ -1,9 +1,17 @@
-from kivy.app import App
-from kivy.uix.button import Button
-
-class AIAssistantApp(App):
-    def build(self):
-        return Button(text='Hello, My System is Ready!', font_size=50)
-
-if __name__ == '__main__':
-    AIAssistantApp().run()
+name: Build APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: buildozer android debug
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: package
+          path: ${{ steps.buildozer.outputs.filename }}
